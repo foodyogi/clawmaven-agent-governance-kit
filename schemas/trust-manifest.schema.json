@@ -1,0 +1,210 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://clawmaven.com/schemas/v0.1.0/trust-manifest.schema.json",
+  "title": "Agent Trust Manifest",
+  "description": "Declares what an AI agent can access, what it knows, and what risks it carries. Intended to be committed alongside agent code and reviewed before deployment.",
+  "type": "object",
+  "required": ["schema_version", "agent_name", "runtime"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema. Use '0.1.0' for files conforming to the ClawMaven Open Governance Kit v0.1.0."
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Human-readable name for the agent.",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "maintainer": {
+      "type": "object",
+      "description": "The team or individual responsible for this agent.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "team": {
+          "type": "string"
+        },
+        "org": {
+          "type": "string"
+        }
+      }
+    },
+    "runtime": {
+      "type": "string",
+      "description": "The runtime or framework this agent uses.",
+      "examples": ["langchain", "autogpt", "crewai", "openai-assistants", "custom", "other"]
+    },
+    "model": {
+      "type": "string",
+      "description": "The LLM or model powering this agent.",
+      "examples": ["gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro", "llama-3-70b"]
+    },
+    "data_access": {
+      "type": "object",
+      "description": "Describes what data sources this agent can read from or write to.",
+      "properties": {
+        "reads_from": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Data sources the agent reads from.",
+          "examples": [["internal_knowledge_base", "user_uploaded_files", "public_web"]]
+        },
+        "writes_to": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Data stores the agent can write to.",
+          "examples": [["output_folder", "results_database"]]
+        },
+        "pii_access": {
+          "type": "boolean",
+          "description": "Whether this agent has access to personally identifiable information.",
+          "default": false
+        },
+        "sensitive_categories": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Categories of sensitive data this agent may encounter.",
+          "examples": [["financial_records", "health_data", "credentials"]]
+        }
+      }
+    },
+    "tool_access": {
+      "type": "array",
+      "description": "List of tools or capabilities registered with this agent.",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the tool."
+          },
+          "description": {
+            "type": "string",
+            "description": "What this tool does."
+          },
+          "write_capable": {
+            "type": "boolean",
+            "description": "Whether this tool can modify data or trigger external side effects.",
+            "default": false
+          },
+          "requires_approval": {
+            "type": "boolean",
+            "description": "Whether human approval is required before this tool may be called.",
+            "default": false
+          }
+        }
+      }
+    },
+    "network_access": {
+      "type": "object",
+      "description": "Describes this agent's network permissions.",
+      "properties": {
+        "outbound_allowed": {
+          "type": "boolean",
+          "description": "Whether the agent can make outbound network requests.",
+          "default": false
+        },
+        "allowed_domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowlist of domains the agent may contact. Empty means no restriction (if outbound_allowed is true)."
+        },
+        "blocked_domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Domains the agent must never contact."
+        }
+      }
+    },
+    "secrets_policy": {
+      "type": "object",
+      "description": "How this agent handles secrets and credentials.",
+      "properties": {
+        "accesses_secrets": {
+          "type": "boolean",
+          "description": "Whether this agent requires access to any secrets, API keys, or credentials.",
+          "default": false
+        },
+        "secret_store": {
+          "type": "string",
+          "description": "Where secrets are retrieved from (e.g., env vars, vault, secrets manager).",
+          "examples": ["environment_variables", "aws_secrets_manager", "hashicorp_vault"]
+        },
+        "secrets_logged": {
+          "type": "boolean",
+          "description": "Whether secrets may appear in logs. Should always be false.",
+          "default": false
+        }
+      }
+    },
+    "audit_policy": {
+      "type": "object",
+      "description": "How agent activity is logged and audited.",
+      "properties": {
+        "logs_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "log_destination": {
+          "type": "string",
+          "description": "Where logs are sent.",
+          "examples": ["stdout", "cloudwatch", "datadog", "local_file"]
+        },
+        "retention_days": {
+          "type": "integer",
+          "description": "How long logs are retained in days.",
+          "minimum": 0
+        },
+        "run_reports_required": {
+          "type": "boolean",
+          "description": "Whether a structured run report must be produced for every execution.",
+          "default": false
+        }
+      }
+    },
+    "known_risks": {
+      "type": "array",
+      "description": "Known risks or limitations of this agent, documented by the maintainer.",
+      "items": {
+        "type": "object",
+        "required": ["risk", "severity"],
+        "properties": {
+          "risk": {
+            "type": "string",
+            "description": "Description of the known risk."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "mitigation": {
+            "type": "string",
+            "description": "How this risk is mitigated or accepted."
+          }
+        }
+      }
+    },
+    "manifest_version": {
+      "type": "string",
+      "description": "Version of this specific trust manifest document."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this manifest was created."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this manifest was last updated."
+    }
+  },
+  "additionalProperties": false
+}

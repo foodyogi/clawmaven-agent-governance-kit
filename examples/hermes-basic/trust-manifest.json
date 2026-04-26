@@ -1,0 +1,86 @@
+{
+  "schema_version": "0.1.0",
+  "agent_name": "Hermes Support Agent",
+  "maintainer": {
+    "name": "Support Operations",
+    "email": "support-ops@example.com",
+    "team": "Customer Support",
+    "org": "Example Org"
+  },
+  "runtime": "custom",
+  "model": "NousResearch/Hermes-3-Llama-3.1-8B",
+  "data_access": {
+    "reads_from": ["support_ticket_system", "internal_knowledge_base"],
+    "writes_to": ["draft_response_queue"],
+    "pii_access": true,
+    "sensitive_categories": ["customer_contact_details", "support_history"]
+  },
+  "tool_access": [
+    {
+      "name": "search_knowledge_base",
+      "description": "Searches the internal support knowledge base for relevant articles.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "read_ticket",
+      "description": "Reads the full contents of a support ticket including customer messages.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "generate_draft_response",
+      "description": "Generates a draft reply to be reviewed by a human agent before sending.",
+      "write_capable": true,
+      "requires_approval": true
+    },
+    {
+      "name": "tag_ticket",
+      "description": "Applies a category or priority tag to a ticket.",
+      "write_capable": true,
+      "requires_approval": false
+    },
+    {
+      "name": "route_ticket",
+      "description": "Routes the ticket to a specific support queue or team.",
+      "write_capable": true,
+      "requires_approval": true
+    }
+  ],
+  "network_access": {
+    "outbound_allowed": false,
+    "allowed_domains": [],
+    "blocked_domains": []
+  },
+  "secrets_policy": {
+    "accesses_secrets": false,
+    "secret_store": "environment_variables",
+    "secrets_logged": false
+  },
+  "audit_policy": {
+    "logs_enabled": true,
+    "log_destination": "datadog",
+    "retention_days": 730,
+    "run_reports_required": true
+  },
+  "known_risks": [
+    {
+      "risk": "Agent reads support tickets that may contain customer PII including name, email, and account details.",
+      "severity": "high",
+      "mitigation": "PII is not stored beyond the scope of the run. Logs are scrubbed of customer identifiers. Data retention policy is enforced on log destination."
+    },
+    {
+      "risk": "Draft responses may be factually incorrect or out of date if the knowledge base has not been updated.",
+      "severity": "medium",
+      "mitigation": "All draft responses require human review and approval before sending. Knowledge base is reviewed quarterly."
+    },
+    {
+      "risk": "Model may misclassify ticket urgency, resulting in low-priority routing of a high-severity issue.",
+      "severity": "medium",
+      "mitigation": "Human support agents review all ticket routings. Escalation path remains available to override agent routing."
+    }
+  ],
+  "manifest_version": "1.0.0",
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-01T00:00:00Z"
+}

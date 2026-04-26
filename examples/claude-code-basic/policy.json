@@ -1,0 +1,63 @@
+{
+  "schema_version": "0.1.0",
+  "agent_name": "Claude Code Assistant",
+  "description": "A coding assistant agent powered by Claude. Assists developers with code review, refactoring, test generation, and documentation. Operates within a developer's local environment or CI pipeline with read access to the codebase and write access to designated output directories.",
+  "runtime": "openai-assistants",
+  "autonomy_level": "balanced",
+  "allowed_actions": [
+    "read_file",
+    "list_directory",
+    "write_output_file",
+    "run_linter",
+    "run_tests",
+    "call_llm",
+    "generate_diff"
+  ],
+  "restricted_actions": [
+    "shell_exec",
+    "git_push",
+    "deploy_to_production",
+    "credential_access",
+    "delete_file",
+    "install_packages",
+    "access_external_apis",
+    "send_communication"
+  ],
+  "approval_required_for": [
+    "write_to_source_files",
+    "run_in_ci_pipeline",
+    "generate_output_exceeding_500_lines"
+  ],
+  "spend_limits": {
+    "per_run_usd": 1.50,
+    "daily_usd": 30.00,
+    "monthly_usd": 300.00,
+    "alert_threshold_pct": 75
+  },
+  "escalation_rules": [
+    {
+      "trigger": "security_pattern_detected_in_code",
+      "action": "halt_and_notify",
+      "notify": "security@example.com"
+    },
+    {
+      "trigger": "spend_threshold_reached",
+      "action": "halt_and_notify",
+      "notify": "dev-platform@example.com"
+    },
+    {
+      "trigger": "ambiguous_objective",
+      "action": "request_human_approval"
+    }
+  ],
+  "logging_required": true,
+  "human_contact": {
+    "name": "Developer Platform Team",
+    "email": "dev-platform@example.com",
+    "team": "Developer Experience"
+  },
+  "data_sensitivity": "confidential",
+  "policy_version": "1.0.0",
+  "effective_date": "2025-01-01",
+  "review_date": "2025-06-01"
+}

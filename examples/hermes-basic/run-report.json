@@ -1,0 +1,77 @@
+{
+  "schema_version": "0.1.0",
+  "run_id": "run_hermes_support_20250115_0294",
+  "agent_name": "Hermes Support Agent",
+  "runtime": "custom",
+  "started_at": "2025-01-15T10:15:00Z",
+  "completed_at": "2025-01-15T10:15:44Z",
+  "objective": "Classify and generate a draft response for support ticket #48821: customer reporting inability to export data from their account.",
+  "actions_taken": [
+    {
+      "sequence": 1,
+      "action": "read_ticket",
+      "tool": "read_ticket",
+      "input_summary": "Read ticket #48821.",
+      "output_summary": "Ticket contains 3 customer messages. Issue: data export button not working. Account type: Pro. Browser: Chrome 121.",
+      "timestamp": "2025-01-15T10:15:02Z",
+      "duration_ms": 310
+    },
+    {
+      "sequence": 2,
+      "action": "search_knowledge_base",
+      "tool": "search_knowledge_base",
+      "input_summary": "Query: 'data export not working Pro account'",
+      "output_summary": "Found 2 relevant articles: 'Troubleshooting data exports' and 'Known issue: export timeout for large datasets (>50k rows)'.",
+      "timestamp": "2025-01-15T10:15:05Z",
+      "duration_ms": 480
+    },
+    {
+      "sequence": 3,
+      "action": "tag_ticket",
+      "tool": "tag_ticket",
+      "input_summary": "Apply tags: category=data-export, priority=medium, account-type=pro",
+      "output_summary": "Tags applied successfully.",
+      "timestamp": "2025-01-15T10:15:08Z",
+      "duration_ms": 95
+    },
+    {
+      "sequence": 4,
+      "action": "call_llm",
+      "tool": "call_llm",
+      "input_summary": "Generate a draft support response based on ticket content and knowledge base articles.",
+      "output_summary": "Draft response generated (187 words). Acknowledges issue, provides 3-step troubleshooting guide, offers escalation if unresolved.",
+      "timestamp": "2025-01-15T10:15:38Z",
+      "duration_ms": 6200
+    },
+    {
+      "sequence": 5,
+      "action": "generate_draft_response",
+      "tool": "generate_draft_response",
+      "input_summary": "Write draft to review queue for ticket #48821.",
+      "output_summary": "Draft saved to review queue. Awaiting human approval before send.",
+      "timestamp": "2025-01-15T10:15:42Z",
+      "duration_ms": 85
+    }
+  ],
+  "approvals_requested": [
+    {
+      "reason": "Draft response requires human review before sending to customer.",
+      "requested_at": "2025-01-15T10:15:43Z",
+      "resolved_at": "2025-01-15T10:28:12Z",
+      "status": "approved",
+      "approver": "M. Thompson"
+    }
+  ],
+  "policy_violations": [],
+  "spend_used": {
+    "llm_cost_usd": 0.03,
+    "tool_cost_usd": 0.00,
+    "total_cost_usd": 0.03,
+    "tokens_used": 2800
+  },
+  "outcome": "success",
+  "outcome_summary": "Ticket #48821 classified as medium priority, tagged, and a draft response generated. Draft approved by human agent M. Thompson and sent to customer at 10:28 UTC.",
+  "reviewer_notes": "Response accurate. Added internal note about known export timeout bug for engineering backlog.",
+  "reviewed_by": "M. Thompson",
+  "reviewed_at": "2025-01-15T10:28:12Z"
+}

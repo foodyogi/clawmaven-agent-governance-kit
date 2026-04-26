@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.1.0",
+  "agent_name": "Hermes Support Agent",
+  "description": "A customer-facing support agent powered by Hermes (NousResearch). Handles inbound support queries, retrieves knowledge base articles, and routes escalations. No write access to customer data. All external communications require human review before sending.",
+  "runtime": "custom",
+  "autonomy_level": "manual",
+  "allowed_actions": [
+    "search_knowledge_base",
+    "read_ticket",
+    "call_llm",
+    "generate_draft_response",
+    "tag_ticket",
+    "route_ticket"
+  ],
+  "restricted_actions": [
+    "send_email",
+    "send_sms",
+    "update_customer_record",
+    "delete_ticket",
+    "access_payment_data",
+    "issue_refund",
+    "shell_exec",
+    "credential_access"
+  ],
+  "approval_required_for": [
+    "all_outbound_communications",
+    "ticket_closure",
+    "escalation_to_engineering"
+  ],
+  "spend_limits": {
+    "per_run_usd": 0.25,
+    "daily_usd": 10.00,
+    "monthly_usd": 100.00,
+    "alert_threshold_pct": 80
+  },
+  "escalation_rules": [
+    {
+      "trigger": "customer_expresses_legal_threat",
+      "action": "halt_and_notify",
+      "notify": "legal@example.com"
+    },
+    {
+      "trigger": "customer_requests_data_deletion",
+      "action": "halt_and_notify",
+      "notify": "privacy@example.com"
+    },
+    {
+      "trigger": "output_confidence_low",
+      "action": "request_human_approval"
+    },
+    {
+      "trigger": "spend_threshold_reached",
+      "action": "halt_and_notify",
+      "notify": "support-ops@example.com"
+    }
+  ],
+  "logging_required": true,
+  "human_contact": {
+    "name": "Support Operations",
+    "email": "support-ops@example.com",
+    "team": "Customer Support"
+  },
+  "data_sensitivity": "confidential",
+  "policy_version": "1.0.0",
+  "effective_date": "2025-01-01",
+  "review_date": "2025-04-01"
+}

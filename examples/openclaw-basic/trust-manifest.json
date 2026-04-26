@@ -1,0 +1,69 @@
+{
+  "schema_version": "0.1.0",
+  "agent_name": "OpenClaw Research Agent",
+  "maintainer": {
+    "name": "Platform Engineering",
+    "email": "ai-ops@example.com",
+    "team": "AI Platform",
+    "org": "Example Org"
+  },
+  "runtime": "custom",
+  "model": "llama-3-70b",
+  "data_access": {
+    "reads_from": ["public_web", "user_uploaded_files"],
+    "writes_to": ["output_folder"],
+    "pii_access": false,
+    "sensitive_categories": []
+  },
+  "tool_access": [
+    {
+      "name": "web_search",
+      "description": "Searches the public web using a search API.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "read_url",
+      "description": "Fetches and parses the text content of a given URL.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "write_output_file",
+      "description": "Writes the final research summary to a designated output folder.",
+      "write_capable": true,
+      "requires_approval": false
+    }
+  ],
+  "network_access": {
+    "outbound_allowed": true,
+    "allowed_domains": [],
+    "blocked_domains": ["internal.corp", "localhost", "169.254.0.0/16"]
+  },
+  "secrets_policy": {
+    "accesses_secrets": true,
+    "secret_store": "environment_variables",
+    "secrets_logged": false
+  },
+  "audit_policy": {
+    "logs_enabled": true,
+    "log_destination": "stdout",
+    "retention_days": 90,
+    "run_reports_required": true
+  },
+  "known_risks": [
+    {
+      "risk": "May retrieve inaccurate or outdated information from public web sources.",
+      "severity": "medium",
+      "mitigation": "Outputs are labeled as unverified research. Human review required before any business use."
+    },
+    {
+      "risk": "Could follow redirect chains to untrusted domains if the initial domain is compromised.",
+      "severity": "low",
+      "mitigation": "Blocked domains list is maintained and updated regularly."
+    }
+  ],
+  "manifest_version": "1.0.0",
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-01T00:00:00Z"
+}
