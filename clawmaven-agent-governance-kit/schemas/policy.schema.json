@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://clawmaven.com/schemas/v0.1.0/policy.schema.json",
+  "title": "Agent Policy",
+  "description": "Governance policy file for an AI agent. Defines permitted and restricted behaviors, spend limits, approval requirements, and escalation rules.",
+  "type": "object",
+  "required": ["schema_version", "agent_name", "runtime", "autonomy_level"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema. Use '0.1.0' for files conforming to the ClawMaven Open Governance Kit v0.1.0.",
+      "example": "0.1.0"
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Human-readable name for the agent.",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "description": {
+      "type": "string",
+      "description": "A short description of what this agent does and its intended purpose.",
+      "maxLength": 512
+    },
+    "runtime": {
+      "type": "string",
+      "description": "The runtime or framework this agent runs on.",
+      "examples": ["langchain", "autogpt", "crewai", "openai-assistants", "custom", "other"]
+    },
+    "autonomy_level": {
+      "type": "string",
+      "description": "How much independent action the agent is permitted to take without human involvement.",
+      "enum": ["manual", "balanced", "operator"],
+      "$comment": "manual = human approves every action; balanced = human approves high-risk actions; operator = agent acts autonomously within defined bounds"
+    },
+    "allowed_actions": {
+      "type": "array",
+      "description": "Explicit list of action categories or tool calls this agent is permitted to perform.",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["web_search", "read_file", "send_email"]]
+    },
+    "restricted_actions": {
+      "type": "array",
+      "description": "Action categories or tool calls this agent is explicitly forbidden from performing.",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["shell_exec", "credential_access", "delete_data", "payment_initiation"]]
+    },
+    "approval_required_for": {
+      "type": "array",
+      "description": "List of conditions or action types that require explicit human approval before the agent may proceed.",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["spend_over_threshold", "external_api_write", "send_communication", "data_export"]]
+    },
+    "spend_limits": {
+      "type": "object",
+      "description": "Budget constraints for this agent.",
+      "properties": {
+        "per_run_usd": {
+          "type": "number",
+          "description": "Maximum spend in USD per single run or task execution.",
+          "minimum": 0
+        },
+        "daily_usd": {
+          "type": "number",
+          "description": "Maximum cumulative spend in USD per calendar day.",
+          "minimum": 0
+        },
+        "monthly_usd": {
+          "type": "number",
+          "description": "Maximum cumulative spend in USD per calendar month.",
+          "minimum": 0
+        },
+        "alert_threshold_pct": {
+          "type": "number",
+          "description": "Percentage of the limit at which an alert should be triggered (0–100).",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "escalation_rules": {
+      "type": "array",
+      "description": "Conditions under which the agent must pause and escalate to a human operator.",
+      "items": {
+        "type": "object",
+        "required": ["trigger", "action"],
+        "properties": {
+          "trigger": {
+            "type": "string",
+            "description": "The condition that triggers escalation.",
+            "examples": ["ambiguous_objective", "spend_threshold_reached", "tool_error_rate_high", "output_confidence_low"]
+          },
+          "action": {
+            "type": "string",
+            "description": "What should happen when this trigger fires.",
+            "examples": ["halt_and_notify", "request_human_approval", "log_and_continue"]
+          },
+          "notify": {
+            "type": "string",
+            "description": "Contact or channel to notify when this escalation fires.",
+            "examples": ["ops-team@example.com", "#ai-alerts"]
+          }
+        }
+      }
+    },
+    "logging_required": {
+      "type": "boolean",
+      "description": "Whether structured logging of all agent actions is required. Strongly recommended for production agents.",
+      "default": true
+    },
+    "human_contact": {
+      "type": "object",
+      "description": "Primary human contact responsible for this agent.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "team": {
+          "type": "string"
+        }
+      }
+    },
+    "data_sensitivity": {
+      "type": "string",
+      "description": "Classification of the data this agent processes.",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "policy_version": {
+      "type": "string",
+      "description": "Version of this specific policy document. Use semantic versioning."
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this policy became effective (YYYY-MM-DD)."
+    },
+    "review_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this policy is next scheduled for review (YYYY-MM-DD)."
+    }
+  },
+  "additionalProperties": false
+}

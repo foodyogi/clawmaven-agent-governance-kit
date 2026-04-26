@@ -1,0 +1,92 @@
+{
+  "schema_version": "0.1.0",
+  "agent_name": "Claude Code Assistant",
+  "maintainer": {
+    "name": "Developer Platform Team",
+    "email": "dev-platform@example.com",
+    "team": "Developer Experience",
+    "org": "Example Org"
+  },
+  "runtime": "openai-assistants",
+  "model": "claude-3-5-sonnet-20241022",
+  "data_access": {
+    "reads_from": ["local_codebase", "project_documentation"],
+    "writes_to": ["output_folder", "review_comments_file"],
+    "pii_access": false,
+    "sensitive_categories": ["source_code", "internal_architecture"]
+  },
+  "tool_access": [
+    {
+      "name": "read_file",
+      "description": "Reads the contents of a file from the codebase.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "list_directory",
+      "description": "Lists files and subdirectories within the project root.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "write_output_file",
+      "description": "Writes generated code, diffs, or documentation to a designated output directory. Does not overwrite source files directly.",
+      "write_capable": true,
+      "requires_approval": false
+    },
+    {
+      "name": "run_linter",
+      "description": "Runs the project's configured linter (e.g., ESLint, Ruff) on specified files.",
+      "write_capable": false,
+      "requires_approval": false
+    },
+    {
+      "name": "run_tests",
+      "description": "Executes the project's test suite or a specified subset of tests.",
+      "write_capable": false,
+      "requires_approval": true
+    },
+    {
+      "name": "generate_diff",
+      "description": "Produces a unified diff between the original and proposed code changes.",
+      "write_capable": false,
+      "requires_approval": false
+    }
+  ],
+  "network_access": {
+    "outbound_allowed": true,
+    "allowed_domains": ["api.anthropic.com"],
+    "blocked_domains": ["internal.corp", "localhost", "169.254.169.254"]
+  },
+  "secrets_policy": {
+    "accesses_secrets": true,
+    "secret_store": "environment_variables",
+    "secrets_logged": false
+  },
+  "audit_policy": {
+    "logs_enabled": true,
+    "log_destination": "cloudwatch",
+    "retention_days": 365,
+    "run_reports_required": true
+  },
+  "known_risks": [
+    {
+      "risk": "Agent reads source code which may contain internal business logic, proprietary algorithms, or undocumented security assumptions.",
+      "severity": "high",
+      "mitigation": "Agent is scoped to read-only access of the codebase. Output is written to a separate directory and reviewed by a developer before any changes are applied. Source files cannot be modified directly."
+    },
+    {
+      "risk": "Generated code suggestions may introduce subtle bugs or security vulnerabilities not caught by automated linting.",
+      "severity": "medium",
+      "mitigation": "All generated code requires human code review before merge. Agent-generated changes are clearly labeled in commit messages."
+    },
+    {
+      "risk": "LLM may hallucinate API signatures or library behavior if context window is insufficient.",
+      "severity": "low",
+      "mitigation": "Outputs are clearly labeled as AI-generated drafts. Developers are instructed to verify against official documentation."
+    }
+  ],
+  "manifest_version": "1.0.0",
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-01T00:00:00Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "0.1.0",
+  "agent_name": "OpenClaw Research Agent",
+  "description": "A research assistant agent that gathers information from public web sources and summarizes findings. Operates in a sandboxed environment with no write access to production systems.",
+  "runtime": "custom",
+  "autonomy_level": "balanced",
+  "allowed_actions": [
+    "web_search",
+    "read_url",
+    "summarize_text",
+    "write_output_file",
+    "call_llm"
+  ],
+  "restricted_actions": [
+    "shell_exec",
+    "credential_access",
+    "delete_data",
+    "payment_initiation",
+    "send_email",
+    "write_to_database",
+    "access_internal_network"
+  ],
+  "approval_required_for": [
+    "output_exceeds_10000_words",
+    "accessing_domains_not_in_allowlist",
+    "runtime_exceeds_30_minutes"
+  ],
+  "spend_limits": {
+    "per_run_usd": 2.00,
+    "daily_usd": 20.00,
+    "monthly_usd": 200.00,
+    "alert_threshold_pct": 80
+  },
+  "escalation_rules": [
+    {
+      "trigger": "ambiguous_objective",
+      "action": "halt_and_notify",
+      "notify": "ai-ops@example.com"
+    },
+    {
+      "trigger": "spend_threshold_reached",
+      "action": "halt_and_notify",
+      "notify": "ai-ops@example.com"
+    },
+    {
+      "trigger": "tool_error_rate_high",
+      "action": "log_and_continue"
+    }
+  ],
+  "logging_required": true,
+  "human_contact": {
+    "name": "Platform Engineering",
+    "email": "ai-ops@example.com",
+    "team": "AI Platform"
+  },
+  "data_sensitivity": "internal",
+  "policy_version": "1.0.0",
+  "effective_date": "2025-01-01",
+  "review_date": "2025-07-01"
+}
